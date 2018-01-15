@@ -33,9 +33,9 @@ name | type | description
 `root` | *`string`* | Directory or file path to walk. This gets normalized as `path.join(cwd, root)`. Default is `/`
 `exclude` | *`array`* | Array of directory names to exclude from walk. Defaults to `['.git', 'node_modules', 'bower_components']`. Directory names are excluded `before` reading them, this helps it stay fast
 `require` | *`boolean`* | Whether to `require` file contents instead of reading them. Default is `false`
-`read` | *`boolean`* | Whether to `read|require` file contents when using `each()`. Defaults to `true`
-`src` | *`Array|String|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `**/*`,
-`dot` | *`boolean`* | Determines. Default is `true`
+`read` | *`boolean`* | Whether to read require file contents when using `each()`. Defaults to `true`
+`src` | *`Array|String|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `**/*`
+`dot` | *`boolean`* | Whether or not to ignore dot files when matching. Default is `true`
 
 ### Methods
 Name | Description
