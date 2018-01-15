@@ -1,5 +1,5 @@
 # Walk
-File and directory walking utility for node apps
+Directory and file walking utility for node apps
 
 Features:
 * Easy to use
