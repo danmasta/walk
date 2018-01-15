@@ -44,7 +44,7 @@ Name | Description
 `walkSync(opts)` | Sync version of `walk()`
 `contents(opts)` | Get the contents of files based on specified options. Returns a promise that resolves with an array of file objects
 `contentsSync(opts)` | Sync version of `contents()`
-`each(opts, cb)` | Runs a callback for each file based on specified options. Returns a promise that resolves with an array of file objects. Callback takes one argument `file`
+`each(opts, cb)` | Runs a callback for each file based on specified options. Returns a promise that resolves with an array of file objects. Callback takes one argument [`file`](#file-objects)
 `eachSync(opts, cb)` | Sync version of `each()`
 
 ## File Objects
