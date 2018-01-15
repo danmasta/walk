@@ -61,7 +61,7 @@ name | type | description
 `name` | *`string`* | File name without extension
 `ext` | *`string`* | File extension
 `stat` | *`object`* | The [fs.stat](https://nodejs.org/api/fs.html#fs_class_fs_stats) object for the file
-`contents` | *`string|object`* | Contents of the file. If `require` is `true`, will be resolved `object`, otherwise `string`. Default is `null`
+`contents` | *`string\|object`* | Contents of the file. If `require` is `true`, will be resolved `object`, otherwise `string`. Default is `null`
 
 ### Methods
 name | description
