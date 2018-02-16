@@ -10,13 +10,13 @@ const statAsync = Promise.promisify(fs.stat);
 const readFileAsync = Promise.promisify(fs.readFile);
 
 // walk directory asyncronously using promises
-function walkDirAsync(opts, res = []) {
+function walkDirAsync() {
 
-    opts = util.opts(opts);
+    let opts = util.opts(...arguments);
 
     function walkdir(dir) {
 
-        return readdirAsync(dir).map(name => {
+        return util.concatMapAsync(readdirAsync(dir), name => {
 
             let abs = path.resolve(dir, name);
 
@@ -33,7 +33,9 @@ function walkDirAsync(opts, res = []) {
                     let file = new File({ path: abs, stat: stat, cwd: opts.cwd, root: opts.root });
 
                     if (opts.matcher(file.relative || file.base)) {
-                        return res.push(file);
+                        return [file];
+                    } else {
+                        return [];
                     }
 
                 }
@@ -44,18 +46,52 @@ function walkDirAsync(opts, res = []) {
 
     }
 
-    return walkdir(opts.root).return(res);
+    return walkdir(opts.root);
+
+}
+
+
+// walk async
+function walk() {
+
+    let opts = util.opts(...arguments);
+
+    return statAsync(opts.root).then(stat => {
+
+        if (stat.isDirectory()) {
+
+            return walkDirAsync(opts);
+
+        } else {
+
+            let file = new File({ path: opts.root, stat: stat, cwd: opts.cwd, root: opts.root });
+
+            if (opts.matcher(file.relative || file.base)) {
+                return [file];
+            } else {
+                return [];
+            }
+
+        }
+
+    }).catch(err => {
+
+        opts.root = require.resolve(opts.root);
+
+        return walk(opts);
+
+    });
 
 }
 
 // walk directory syncronously
-function walkDirSync(opts, res = []) {
+function walkDirSync() {
 
-    opts = util.opts(opts);
+    let opts = util.opts(...arguments);
 
     function walkdir(dir) {
 
-        return fs.readdirSync(dir).map(name => {
+        return util.concatMap(fs.readdirSync(dir), name => {
 
             let abs = path.resolve(dir, name);
             let stat = fs.statSync(abs);
@@ -71,7 +107,7 @@ function walkDirSync(opts, res = []) {
                 let file = new File({ path: abs, stat: stat, cwd: opts.cwd, root: opts.root });
 
                 if (opts.matcher(file.relative || file.base)) {
-                    return res.push(file);
+                    return file;
                 }
 
             }
@@ -80,46 +116,14 @@ function walkDirSync(opts, res = []) {
 
     }
 
-    return walkdir(opts.root) && res;
-
-}
-
-// walk async
-function walk(opts, res = []) {
-
-    opts = util.opts(opts);
-
-    return statAsync(opts.root).then(stat => {
-
-        if (stat.isDirectory()) {
-
-            return walkDirAsync(opts, res);
-
-        } else {
-
-            let file = new File({ path: opts.root, stat: stat, cwd: opts.cwd, root: opts.root });
-
-            if (opts.matcher(file.relative || file.base)) {
-                return res.push(file);
-            }
-
-        }
-
-    }).return(res).catch(err => {
-
-        opts.root = require.resolve(opts.root);
-
-        return walk(opts, res);
-
-    });
+    return walkdir(opts.root);
 
 }
 
 //  walk sync
-function walkSync(opts, res = []) {
+function walkSync() {
 
-    opts = util.opts(opts);
-
+    let opts = util.opts(...arguments);
     let stat = null;
 
     try {
@@ -130,34 +134,34 @@ function walkSync(opts, res = []) {
 
         opts.root = require.resolve(opts.root);
 
-        return walkSync(opts, res);
+        return walkSync(opts);
 
     }
 
     if (stat.isDirectory()) {
 
-        return walkDirSync(opts, res);
+        return walkDirSync(opts);
 
     } else {
 
         let file = new File({ path: opts.root, stat: stat, cwd: opts.cwd, root: opts.root });
 
         if (opts.matcher(file.relative || file.base)) {
-            res.push(file);
+            return [file];
+        } else {
+            return [];
         }
-
-        return res;
 
     }
 
 }
 
 // get file contents async
-function contents(opts, res = []) {
+function contents() {
 
-    opts = util.opts(opts);
+    let opts = util.opts(...arguments);
 
-    return walk(opts, res).map(file => {
+    return walk(opts).map(file => {
 
         if (opts.require) {
 
@@ -182,11 +186,11 @@ function contents(opts, res = []) {
 }
 
 // get file contents sync
-function contentsSync(opts, res = []) {
+function contentsSync() {
 
-    opts = util.opts(opts);
+    let opts = util.opts(...arguments);
 
-    return walkSync(opts, res).map(file => {
+    return walkSync(opts).map(file => {
 
         if (opts.require) {
 
@@ -207,30 +211,28 @@ function contentsSync(opts, res = []) {
 }
 
 // run callback for each file async
-function each(opts, cb) {
+function each(...args) {
 
-    opts = util.opts(opts);
-
-    let fn = opts.read ? contents : walk;
-
-    cb = typeof cb === 'function' ? cb : function (file) {
+    let cb = typeof args[args.length - 1] === 'function' ? args.pop() : file => {
         return file;
     };
+
+    let opts = util.opts(...args);
+    let fn = opts.read ? contents : walk;
 
     return fn.call(null, opts).map(cb);
 
 }
 
 // run callback for each file sync
-function eachSync(opts, cb) {
+function eachSync(...args) {
 
-    opts = util.opts(opts);
-
-    let fn = opts.read ? contentsSync : walkSync;
-
-    cb = typeof cb === 'function' ? cb : function (file) {
+    let cb = typeof args[args.length - 1] === 'function' ? args.pop() : file => {
         return file;
     };
+
+    let opts = util.opts(...args);
+    let fn = opts.read ? contentsSync : walkSync;
 
     return fn.call(null, opts).map(cb);
 
