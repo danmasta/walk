@@ -40,12 +40,12 @@ name | type | description
 ### Methods
 Name | Description
 -----|------------
-`walk(opts)` | Get a list of files based on specified options. Returns a promise that resolves with an array of file objects
-`walkSync(opts)` | Sync version of `walk()`
-`contents(opts)` | Get the contents of files based on specified options. Returns a promise that resolves with an array of file objects
-`contentsSync(opts)` | Sync version of `contents()`
-`each(opts, cb)` | Runs a callback for each file based on specified options. Returns a promise that resolves with an array of file objects. Callback takes one argument [`file`](#file-objects)
-`eachSync(opts, cb)` | Sync version of `each()`
+`walk([path,]opts)` | Get a list of files based on specified options. Returns a promise that resolves with an array of file objects
+`walkSync` | Sync version of `walk`
+`contents([path,]opts)` | Get the contents of files based on specified options. Returns a promise that resolves with an array of file objects
+`contentsSync` | Sync version of `contents`
+`each([path,]opts[,cb])` | Runs a callback for each file based on specified options. Returns a promise that resolves with an array of file objects. Callback takes one argument [`file`](#file-objects)
+`eachSync` | Sync version of `each`
 
 ## File Objects
 Each file returned from walk has the following signature
@@ -78,7 +78,7 @@ name | description
 ```js
 const walk = require('@danmasta/walk').walk;
 ```
-Walk the current directory, exclude all `.json` files
+Walk the current working directory, exclude all `.json` files
 ```js
 walk({ src: '**/*.!(json)' }).then(res => {
     console.log('files:', res);
@@ -86,7 +86,13 @@ walk({ src: '**/*.!(json)' }).then(res => {
 ```
 Walk a child directory, include only `.json` files
 ```js
-walk({ root: './config', src: '**/*.json' }).then(res => {
+walk('./config', { src: '**/*.json' }).then(res => {
+    console.log('files:', res);
+});
+```
+Walk a directory using an absolute path
+```js
+walk('/usr/local').then(res => {
     console.log('files:', res);
 });
 ```
@@ -97,7 +103,7 @@ const contents = require('@danmasta/walk').contents;
 ```
 Read the contents of all `pug` files in `./views`
 ```js
-contents({ root: './views', src: '**/*.pug' }).then(res => {
+contents('./views', { src: '**/*.pug' }).then(res => {
     console.log('templates:', res);
 });
 ```
@@ -108,7 +114,7 @@ const each = require('@danmasta/walk').each;
 ```
 Require all `js` files in the `./routes` directory and run a callback for each one
 ```js
-each({ root: './routes', src: '**/*.js', require: true }, route => {
+each('./routes', { src: '**/*.js', require: true }, route => {
     app.use(route());
 }).then(res => {
     console.log('all routes loaded');
@@ -122,7 +128,7 @@ const contents = require('@danmasta/walk').contentsSync;
 ```
 Load all templates from the `./views` directory
 ```js
-const templates = contents({ root: './views', src: '**/*.pug' });
+const templates = contents('./views', { src: '**/*.pug' });
 console.log('templates:', templates);
 ```
 
