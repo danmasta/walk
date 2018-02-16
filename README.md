@@ -46,6 +46,7 @@ Name | Description
 `contentsSync` | Sync version of `contents`
 `each([path,][opts,][iteratee])` | Runs an iteratee function for each file based on specified options. Returns a promise that resolves with an array of file objects. Iteratee takes one argument [`file`](#file-objects)
 `eachSync` | Sync version of `each`
+
 *Each method takes an optional `path` and `options` param as arguments. The `each` methods also accept an iteratee function as the last argument*
 
 ## File Objects
