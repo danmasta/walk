@@ -33,9 +33,7 @@ function walkDirAsync() {
                     let file = new File({ path: abs, stat: stat, cwd: opts.cwd, root: opts.root });
 
                     if (opts.matcher(file.relative || file.base)) {
-                        return [file];
-                    } else {
-                        return [];
+                        return file;
                     }
 
                 }
