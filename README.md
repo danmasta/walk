@@ -40,12 +40,13 @@ name | type | description
 ### Methods
 Name | Description
 -----|------------
-`walk([path,]opts)` | Get a list of files based on specified options. Returns a promise that resolves with an array of file objects
+`walk([path,][opts])` | Get a list of files based on specified options. Returns a promise that resolves with an array of file objects
 `walkSync` | Sync version of `walk`
-`contents([path,]opts)` | Get the contents of files based on specified options. Returns a promise that resolves with an array of file objects
+`contents([path,][opts])` | Get the contents of files based on specified options. Returns a promise that resolves with an array of file objects
 `contentsSync` | Sync version of `contents`
-`each([path,]opts[,cb])` | Runs a callback for each file based on specified options. Returns a promise that resolves with an array of file objects. Callback takes one argument [`file`](#file-objects)
+`each([path,][opts,][iteratee])` | Runs an iteratee function for each file based on specified options. Returns a promise that resolves with an array of file objects. Iteratee takes one argument [`file`](#file-objects)
 `eachSync` | Sync version of `each`
+*Each method takes an optional `path` and `options` param as arguments. The `each` methods also accept an iteratee function as the last argument*
 
 ## File Objects
 Each file returned from walk has the following signature
