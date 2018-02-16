@@ -54,8 +54,8 @@ Each file returned from walk has the following signature
 ### Properties
 name | type | description
 -----|----- | -----------
-`cwd` | *`string`* | Current working directory. Defaults to `process.cwd()`
-`root` | *`string`* | Base directory to use for relative pathing. Defaults to `process.cwd`
+`cwd` | *`string`* | Current working directory. Defaults to `process.cwd`
+`root` | *`string`* | Base directory to use for relative pathing. Defaults to `cwd`
 `path` | *`string`* | Absolute path of the file on disk
 `relative` | *`string`* | Relative path of file based normalized from `root`
 `dir` | *`string`* | Parent directory where file is located
