@@ -1,6 +1,6 @@
 {
   "name": "@danmasta/walk",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Daniel Smith <dannmasta@gmail.com>",
   "description": "Directory and file walking utility for node apps",
   "keywords": [
