@@ -3,109 +3,160 @@ const fs = require('fs');
 const Promise = require('bluebird');
 const File = require('./lib/file');
 const util = require('./lib/util');
+const micromatch = require('micromatch');
+const Readable = require('stream').Readable;
+const _ = require('lodash');
 
-// convert fs apis to promises
 const readdirAsync = Promise.promisify(fs.readdir);
 const statAsync = Promise.promisify(fs.stat);
 const readFileAsync = Promise.promisify(fs.readFile);
+const accessAsync = Promise.promisify(fs.access);
 
-// walk directory asyncronously using promises
-function walkDirAsync() {
+const constants = {
+    GLOBS: {
+        all: '*(../)*(**/)*',
+        ignore: '*(../)*(**/)(.git|node_modules)',
+        dot: '*(../)*(**/)!(.)*'
+    }
+};
 
-    let opts = util.opts(...arguments);
+const defaults = {
+    cwd: process.cwd(),
+    root: './',
+    require: false,
+    stream: false,
+    read: false,
+    sync: false,
+    contents: false,
+    buffer: false,
+    src: constants.GLOBS.all,
+    dot: true,
+    ignore: constants.GLOBS.ignore,
+    cb: _.noop
+};
 
-    function walkdir(dir) {
+class Walker {
 
-        return util.concatMapAsync(readdirAsync(dir), name => {
+    constructor (opts) {
 
-            let abs = path.resolve(dir, name);
+        opts = _.defaults(opts, defaults);
 
-            return statAsync(abs).then(stat => {
+        if (!opts.dot && opts.src === constants.GLOBS.all) {
+            opts.src = constants.GLOBS.dot;
+        }
 
-                if (stat.isDirectory()) {
+        opts.root = util.stripTrailingSep(path.resolve(opts.cwd, opts.root));
 
-                    if (!opts.regex.test(name)) {
-                        return walkdir(abs);
+        if (opts.require || opts.read === 'require') {
+            opts.read = 'require';
+        } else if (opts.stream || opts.read === 'stream') {
+            opts.read = 'stream';
+        } else if (opts.read || opts.contents) {
+            opts.read = 'contents';
+        }
+
+        this.opts = opts;
+        this.include = null;
+        this.exclude = null;
+
+        if (opts.src) {
+            this.include = micromatch.matcher(opts.src, { dot: opts.dot });
+        }
+
+        if (opts.ignore) {
+            this.exclude = micromatch.matcher(opts.ignore, { dot: opts.dot });
+        }
+
+    }
+
+    _resolve (str) {
+        return path.resolve(this.opts.root, str);
+    }
+
+    _contents (file) {
+
+        return Promise.resolve().then(() => {
+
+            if (this.opts.read === 'require') {
+
+                return require(file.path);
+
+            } else if (this.opts.read === 'stream') {
+
+                return fs.createReadStream(file.path);
+
+            } else {
+
+                return readFileAsync(file.path).then(buff => {
+                    if (this.opts.buffer) {
+                        return buff;
+                    } else {
+                        return buff.toString();
                     }
+                });
 
-                } else {
-
-                    let file = new File({ path: abs, stat: stat, cwd: opts.cwd, root: opts.root });
-
-                    if (opts.matcher(file.relative || file.base)) {
-                        return file;
-                    }
-
-                }
-
-            });
+            }
 
         });
 
     }
 
-    return walkdir(opts.root);
+    _contentsSync (file) {
 
-}
+        if (this.opts.read === 'require') {
 
+            return require(file.path);
 
-// walk async
-function walk() {
+        } else if (this.opts.read === 'stream') {
 
-    let opts = util.opts(...arguments);
-
-    return statAsync(opts.root).then(stat => {
-
-        if (stat.isDirectory()) {
-
-            return walkDirAsync(opts);
+            return fs.createReadStream(file.path);
 
         } else {
 
-            let file = new File({ path: opts.root, stat: stat, cwd: opts.cwd, root: opts.root });
+            let buff = fs.readFileSync(file.path);
 
-            if (opts.matcher(file.relative || file.base)) {
-                return [file];
+            if (this.opts.buffer) {
+                return buff;
             } else {
-                return [];
+                return buff.toString();
             }
 
         }
 
-    }).catch(err => {
+    }
 
-        opts.root = require.resolve(opts.root);
+    _walk (str) {
 
-        return walk(opts);
-
-    });
-
-}
-
-// walk directory syncronously
-function walkDirSync() {
-
-    let opts = util.opts(...arguments);
-
-    function walkdir(dir) {
-
-        return util.concatMap(fs.readdirSync(dir), name => {
-
-            let abs = path.resolve(dir, name);
-            let stat = fs.statSync(abs);
+        return statAsync(str).then(stat => {
 
             if (stat.isDirectory()) {
 
-                if (!opts.regex.test(name)) {
-                    return walkdir(abs);
-                }
+                return readdirAsync(str).map(name => {
+
+                    let res = path.resolve(str, name);
+                    let rel = path.relative(this.opts.root, res);
+
+                    if (!this.exclude || !this.exclude(rel)) {
+                        return this._walk(res);
+                    }
+
+                });
 
             } else {
 
-                let file = new File({ path: abs, stat: stat, cwd: opts.cwd, root: opts.root });
+                let file = new File({ path: str, stat: stat, cwd: this.opts.cwd, root: this.opts.root });
 
-                if (opts.matcher(file.relative || file.base)) {
-                    return file;
+                if (!this.include || this.include(file.relative || file.base)) {
+
+                    if (this.opts.read) {
+                        return this._contents(file).then(contents => {
+                            file.contents = contents;
+                            this.opts.cb(file);
+                        });
+                    } else {
+                        return this.opts.cb(file);
+                    }
+
                 }
 
             }
@@ -114,132 +165,240 @@ function walkDirSync() {
 
     }
 
-    return walkdir(opts.root);
+    _walkSync (str) {
 
-}
+        let stat = fs.statSync(str);
 
-//  walk sync
-function walkSync() {
+        if (stat.isDirectory()) {
 
-    let opts = util.opts(...arguments);
-    let stat = null;
+            return fs.readdirSync(str).map(name => {
 
-    try {
+                let res = path.resolve(str, name);
+                let rel = path.relative(this.opts.root, res);
 
-        stat = fs.statSync(opts.root);
-
-    } catch (err) {
-
-        opts.root = require.resolve(opts.root);
-
-        return walkSync(opts);
-
-    }
-
-    if (stat.isDirectory()) {
-
-        return walkDirSync(opts);
-
-    } else {
-
-        let file = new File({ path: opts.root, stat: stat, cwd: opts.cwd, root: opts.root });
-
-        if (opts.matcher(file.relative || file.base)) {
-            return [file];
-        } else {
-            return [];
-        }
-
-    }
-
-}
-
-// get file contents async
-function contents() {
-
-    let opts = util.opts(...arguments);
-
-    return walk(opts).map(file => {
-
-        if (opts.require) {
-
-            file.contents = require(file.path);
-
-            return file;
-
-        } else {
-
-            return readFileAsync(file.path, 'utf8').then(contents => {
-
-                file.contents = contents;
-
-                return file;
+                if (!this.exclude || !this.exclude(rel)) {
+                    return this._walkSync(res);
+                }
 
             });
 
-        }
-
-    });
-
-}
-
-// get file contents sync
-function contentsSync() {
-
-    let opts = util.opts(...arguments);
-
-    return walkSync(opts).map(file => {
-
-        if (opts.require) {
-
-            file.contents = require(file.path);
-
-            return file;
-
         } else {
 
-            file.contents = fs.readFileSync(file.path, 'utf8');
+            let file = new File({ path: str, stat: stat, cwd: this.opts.cwd, root: this.opts.root });
 
-            return file;
+            if (!this.include || this.include(file.relative || file.base)) {
+
+                if (this.opts.read) {
+                    file.contents = this._contentsSync(file);
+                }
+
+                return this.opts.cb(file);
+
+            }
 
         }
 
+    }
+
+    walk (str) {
+
+        str = this._resolve(str);
+
+        return accessAsync(str, fs.constants.F_OK).then(() => {
+
+            return str;
+
+        }).catch(() => {
+
+            return require.resolve(str);
+
+        }).then(str => {
+
+            return this._walk(str);
+
+        });
+
+
+    }
+
+    sync (str) {
+
+        str = this._resolve(str);
+
+        try {
+
+            fs.accessSync(str, fs.constants.F_OK);
+
+        } catch (err) {
+
+            str = require.resolve(str);
+
+        }
+
+        return this._walkSync(str);
+
+    }
+
+}
+
+class WalkStream extends Readable {
+
+    constructor (str, opts) {
+
+        super({ objectMode: true });
+
+        opts = _.assign(opts, { cb: this.push.bind(this) });
+
+        this._str = str;
+        this._walker = new Walker(opts);
+
+    }
+
+    _read (size) {
+
+        if (!this.init) {
+            this._init();
+        }
+
+    }
+
+    _init () {
+
+        this.init = true;
+
+        if (!this._walker.opts.sync) {
+            this._walker.walk(this._str).then(() => {
+                this.push(null);
+            });
+        } else {
+            this._walker.sync(this._str);
+            this.push(null);
+        }
+
+    }
+
+}
+
+function _walk (str, opts) {
+
+    let res = [];
+    let cb = res.push.bind(res);
+    let walker = null;
+
+    if (_.isFunction(opts && opts.cb)) {
+        cb = file => {
+            res.push(opts.cb(file));
+        };
+    }
+
+    walker = new Walker(_.assign(null, opts, { cb }));
+
+    return walker.walk(str).then(() => {
+        return res;
     });
 
 }
 
-// run callback for each file async
-function each(...args) {
+function _sync (str, opts) {
 
-    let cb = typeof args[args.length - 1] === 'function' ? args.pop() : file => {
-        return file;
-    };
+    let res = [];
+    let cb = res.push.bind(res);
+    let walker = null;
 
-    let opts = util.opts(...args);
-    let fn = opts.read ? contents : walk;
+    if (_.isFunction(opts && opts.cb)) {
+        cb = file => {
+            res.push(opts.cb(file));
+        };
+    }
 
-    return fn.call(null, opts).map(cb);
+    walker = new Walker(_.assign(null, opts, { cb, sync: true }));
+    walker.sync(str);
 
-}
-
-// run callback for each file sync
-function eachSync(...args) {
-
-    let cb = typeof args[args.length - 1] === 'function' ? args.pop() : file => {
-        return file;
-    };
-
-    let opts = util.opts(...args);
-    let fn = opts.read ? contentsSync : walkSync;
-
-    return fn.call(null, opts).map(cb);
+    return res;
 
 }
 
-// export api
-exports.walk = walk;
-exports.walkSync = walkSync;
-exports.contents = contents;
-exports.contentsSync = contentsSync;
-exports.each = each;
-exports.eachSync = eachSync;
+function _contents (str, opts) {
+
+    opts = _.assign(opts, { read: true });
+
+    return _walk(str, opts);
+
+}
+
+function _contentsSync (str, opts) {
+
+    opts = _.assign(opts, { read: true, sync: true });
+
+    return _sync(str, opts);
+
+}
+
+function _require (str, opts) {
+
+    opts = _.assign(opts, { require: true });
+
+    return _walk(str, opts);
+
+}
+
+function _requireSync (str, opts) {
+
+    opts = _.assign(opts, { require: true, sync: true });
+
+    return _sync(str, opts);
+
+}
+
+function _stream (str, opts) {
+
+    opts = _.assign(opts);
+
+    return new WalkStream(str, opts);
+
+}
+
+function _streamSync (str, opts) {
+
+    opts = _.assign(opts, { sync: true });
+
+    return new WalkStream(str, opts);
+
+}
+
+function _each (str, opts, cb) {
+
+    if (_.isFunction(opts)) {
+        cb = opts;
+    }
+
+    opts = _.assign(opts, { cb: cb });
+
+    return _walk(str, opts);
+
+}
+
+function _eachSync (str, opts, cb) {
+
+    if (_.isFunction(opts)) {
+        cb = opts;
+    }
+
+    opts = _.assign(opts, { cb: cb });
+
+    return _sync(str, opts);
+
+}
+
+exports = module.exports = _walk;
+exports.walk = _walk;
+exports.sync = _sync;
+exports.Walker = Walker;
+exports.contents = _contents;
+exports.contents.sync = _contentsSync;
+exports.require = _require;
+exports.require.sync = _requireSync;
+exports.stream = _stream;
+exports.stream.sync = _streamSync;
+exports.each = _each;
+exports.each.sync = _eachSync;
