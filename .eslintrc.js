@@ -24,6 +24,11 @@ module.exports = {
         "no-console": [
             "warn"
         ],
-        "no-undef": "off"
+        "no-undef": "off",
+        "space-before-function-paren": ["error", {
+            "anonymous": "ignore",
+            "named": "always",
+            "asyncArrow": "always"
+        }],
     }
 };
