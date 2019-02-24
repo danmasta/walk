@@ -52,7 +52,7 @@ Name | Description
 `each.sync` | Sync version of `each`. Returns an Array
 `require(path, opts)` | Get the contents of files by requiring them. Returns a promise that resolves with an array of file objects
 `require.sync` | Sync version of `require`. Returns an Array
-`stream(path, opts)` | Return a read stream of file objects
+`stream(path, opts)` | Returns a read stream of file objects
 `stream.sync` | Sync version of `stream`. Loads file data synchronously. Returns a read stream
 
 
