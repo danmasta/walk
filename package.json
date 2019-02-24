@@ -11,6 +11,10 @@
     "utility"
   ],
   "main": "index.js",
+  "files": [
+    "index.js",
+    "lib/**/*"
+  ],
   "scripts": {
     "test": "mocha tests"
   },
