@@ -1,24 +1,23 @@
-describe('each', function () {
+describe('each', () => {
 
-    it('should run callback for each file async', function (done) {
+    it('should run callback for each file async', () => {
 
         let count = 0;
 
-        walk.each({ root: './tests' }, file => {
+        return walk.each('./tests', file => {
             count++;
             return file;
         }).then(res => {
             expect(count).to.equal(res.length);
-            done();
         });
 
     });
 
-    it('should run callback for each file sync', function () {
+    it('should run callback for each file sync', () => {
 
         let count = 0;
 
-        let res = walk.eachSync({ root: './tests' }, file => {
+        let res = walk.each.sync('./tests', file => {
             count ++;
             return file;
         });
@@ -27,9 +26,9 @@ describe('each', function () {
 
     });
 
-    it('should disable reading of files', function () {
+    it('should disable reading of files', () => {
 
-        walk.eachSync({ root: './tests', read: false }, file => {
+        walk.each.sync('./tests', { read: false }, file => {
             expect(file.contents).to.equal(null);
         });
 

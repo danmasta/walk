@@ -1,8 +1,8 @@
-describe('contents', () => {
+describe('require', () => {
 
-    it('should get contents async', () => {
+    it('should require async', () => {
 
-        return walk.contents('./tests').then(res => {
+        return walk.require('./lib').then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
             expect(res.length).to.be.above(1);
@@ -11,9 +11,9 @@ describe('contents', () => {
 
     });
 
-    it('should get contents sync', () => {
+    it('should require sync', () => {
 
-        let res = walk.contents.sync('./tests');
+        let res = walk.require.sync('./lib');
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -22,9 +22,9 @@ describe('contents', () => {
 
     });
 
-    it('should require files instead of reading them', () => {
+    it('should not be a string', () => {
 
-        let res = walk.contents.sync('./index', { require: true });
+        let res = walk.require.sync('./index');
 
         expect(res[0].contents).to.be.a('function');
 

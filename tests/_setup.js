@@ -4,7 +4,7 @@ const walk = require('../index');
 const File = require('../lib/file');
 const util = require('../lib/util');
 
-beforeEach(function() {
+beforeEach(() => {
     global.path = path;
     global.assert = chai.assert;
     global.expect = chai.expect;
