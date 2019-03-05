@@ -1,11 +1,11 @@
 const path = require('path');
 const fs = require('fs');
+const Readable = require('stream').Readable;
 const Promise = require('bluebird');
+const micromatch = require('micromatch');
+const _ = require('lodash');
 const File = require('./lib/file');
 const util = require('./lib/util');
-const micromatch = require('micromatch');
-const Readable = require('stream').Readable;
-const _ = require('lodash');
 
 const readdirAsync = Promise.promisify(fs.readdir);
 const statAsync = Promise.promisify(fs.stat);
@@ -217,7 +217,6 @@ class Walker {
             return this._walk(str);
 
         });
-
 
     }
 
