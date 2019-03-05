@@ -3,13 +3,15 @@ Directory and file walking utility for node apps
 
 Features:
 * Easy to use
+* Simple, lightweight, and fast
 * Sync, async, streams, and promise api
 * Simple filtering with glob pattern matching
-* Require file contents or read as stream, buffer, or string
+* Require file contents, or read as stream, buffer, or string
 * Resolves require-style path strings
 * Normalized file objects with helper methods
 * Fast pattern matching via [micromatch](https://github.com/micromatch/micromatch)
 * Include and exclude pattern matching options
+* Only 3 dependencies: [micromatch](https://github.com/micromatch/micromatch), [lodash](https://github.com/lodash/lodash), [bluebird](https://github.com/petkaantonov/bluebird)
 
 ## About
 We needed a better way to walk directories and read files during build and/or start time. I wanted an api that was simple, supported glob pattern matching like gulp, and returned objects with a similar format as vinyl. This package allows you to simply read any directory (or file), return an array of objects, and filter results with glob pattern matching. It can also require file contents, read as strings, streams, or buffers, and resolve require-style path strings.
