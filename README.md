@@ -39,7 +39,7 @@ name | type | description
 `contents` | *`boolean`* | If true, will read file contents as string. Default is `false`
 `buffer` | *`boolean`* | If true, when reading file conents, contents will remain a buffer instead of being converted to a string. Default is `false`
 `src` | *`Array\|String\|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by including any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)*`
-`ignore` | *`Array\|String\|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by ignoring any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)(.git|node_modules)`
+`ignore` | *`Array\|String\|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by ignoring any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)(.git\|node_modules)`
 `dot` | *`boolean`* | Whether or not to include dot files when matching. Default is `true`
 `cb` | *`function`* | Function to call when flushing a file object. Default is `_.noop`
 
