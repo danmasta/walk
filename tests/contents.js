@@ -5,7 +5,7 @@ describe('contents', () => {
         return walk('./tests').contents().promise().then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
-            expect(res.length).to.be.above(1);
+            expect(res.length).to.equal(testsFileCount);
             expect(res[0].contents).to.exist;
         });
 
@@ -17,7 +17,7 @@ describe('contents', () => {
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
-        expect(res.length).to.be.above(1);
+        expect(res.length).to.equal(testsFileCount);
         expect(res[0].contents).to.exist;
 
     });
