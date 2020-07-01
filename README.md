@@ -35,13 +35,13 @@ name | type | description
 `root` | *`string`* | Directory or file path as root to walk from. This gets normalized as `path.resolve(cwd, root)`. Default is `./`
 `require` | *`boolean`* | If true, `file.contents` will be a resolved object using `require`. Default is `false`
 `stream` | *`boolean`* | If true, `file.contents` will be a `Readable` stream. Default is `false`
-`read` | *`boolean\|string`* | If `true`, will read file contents as a buffer or string. If string, accepts either 'require', 'stream', or 'contents'. Default is `false`
+`read` | *`boolean\|string`* | If `true`, will read file contents as a buffer or string. If string, accepts either `'require'`, `'stream'`, or `'contents'`. Default is `false`
 `contents` | *`boolean`* | If true, will read file contents as string. Default is `false`
 `buffer` | *`boolean`* | If true, when reading file conents, contents will remain a buffer instead of being converted to a string. Default is `false`
 `src` | *`Array\|String\|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by including any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)*`
 `ignore` | *`Array\|String\|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by ignoring any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)(.git\|node_modules)`
 `dot` | *`boolean`* | Whether or not to include dot files when matching. Default is `true`
-`resolve` | *`boolean`* | Whether or not to attempt to resolve file paths if not found
+`resolve` | *`boolean`* | Whether or not to attempt to resolve file paths if not found. Default is `true`
 
 ### Methods
 Name | Description
