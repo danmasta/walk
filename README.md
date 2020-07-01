@@ -14,7 +14,7 @@ Features:
 * Only 2 dependencies: [micromatch](https://github.com/micromatch/micromatch), [lodash](https://github.com/lodash/lodash)
 
 ## About
-I wanted a better way to walk directories and read files during build and/or run time. I wanted an api that was simple, supported glob pattern matching like gulp, and returned objects with a similar format as vinyl. This package allows you to simply read any directory (or file), return an array of objects, and filter results with glob pattern matching. It can also require file contents, or read them as strings, streams, or buffers, and resolve require-style path strings.
+I needed a better way to walk directories and read files during build and/or run time. I wanted an api that was simple, supported glob pattern matching like gulp, and returned objects with a similar format as vinyl. This package allows you to simply read any directory (or file), return an array of objects, and filter results with glob pattern matching. It can also require file contents, or read them as strings, streams, or buffers, and resolve require-style path strings.
 
 ## Usage
 Add walk as a dependency for your app and install via npm
