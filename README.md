@@ -26,7 +26,7 @@ Require the package in your app
 ```javascript
 const walk = require('@danmasta/walk');
 ```
-By default walk returns a readable stream interface. You can use the methods: `promise()`, `map()`, `each()`, and `sync()` to consume file objects synchronously or via promises.
+By default walk returns a readable stream interface. You can use the methods: `promise()`, `map()`, `each()`, and `sync()` to consume file objects via promises or as a synchronous array.
 
 ### Options
 name | type | description
@@ -47,8 +47,8 @@ name | type | description
 Name | Description
 -----|------------
 `promise()` | Returns a promise that resolves with an array of file objects
-`map(fn)` | Runs an iterator function over each file then returns a promise that resolves with the new `array`
-`each(fn)` | Runs an iterator function over each file then returns a promise that resolves with `undefined`
+`map(fn)` | Runs an iterator function over each file. Returns a promise that resolves with the new `array`
+`each(fn)` | Runs an iterator function over each file. Returns a promise that resolves with `undefined`
 `sync()` | Walks files and directories in syncronous mode. Returns an array of file objects
 `require()` | Enables reading of file contents by requiring them
 `stream()` | Enables reading of file contents as a stream
