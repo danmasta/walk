@@ -88,6 +88,7 @@ name | description
 `isFIFO` | Returns `true` if the file is a [first-in-first-out (FIFO) pipe](https://nodejs.org/api/fs.html#fs_stats_isfifo)
 `isFile` | Returns `true` if the file is a [file](https://nodejs.org/api/fs.html#fs_stats_isfile)
 `isSocket` | Returns `true` if the file is a [socket](https://nodejs.org/api/fs.html#fs_stats_issocket)
+`isEmpty` | Returns `true` if the file is empty (zero bytes)
 
 
 ## Examples
