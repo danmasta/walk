@@ -6,6 +6,12 @@ describe('walk', () => {
 
     });
 
+    it('should return a promise', () => {
+
+        expect(walk('./index').promise()).to.be.instanceOf(Promise);
+
+    });
+
     it('should walk async', () => {
 
         return walk('./index').promise().then(res => {
