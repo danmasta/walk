@@ -81,7 +81,7 @@ describe('walk', () => {
 
     it('should ignore excluded directories', () => {
 
-        return walk('./', { src: 'tests/**/*', ignore: 'tests|.git|node_modules' }).promise().then(res => {
+        return walk('./', { src: 'tests/**/*', ignore: '(tests|.git|node_modules)' }).promise().then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
             expect(res.length).to.equal(0);
