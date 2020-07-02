@@ -35,6 +35,7 @@ describe('file', () => {
             expect(file.isFIFO).to.be.a('function');
             expect(file.isFile).to.be.a('function');
             expect(file.isSocket).to.be.a('function');
+            expect(file.isEmpty).to.be.a('function');
 
         });
 
