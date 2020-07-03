@@ -147,5 +147,8 @@ const templates = walk('./views', { src: '**/*.pug' }).sync();
 console.log('templates:', templates);
 ```
 
+## Testing
+Testing is currently run using mocha and chai. To execute tests just run `npm run test`. To generate unit test coverage reports just run `npm run coverage`
+
 ## Contact
 If you have any questions feel free to get in touch
