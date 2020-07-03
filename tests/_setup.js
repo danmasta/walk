@@ -3,6 +3,7 @@ const chai = require('chai');
 const walk = require('../index');
 const File = require('../lib/file');
 const util = require('../lib/util');
+const stream = require('stream');
 
 beforeEach(() => {
     global.path = path;
@@ -12,4 +13,6 @@ beforeEach(() => {
     global.walk = walk;
     global.File = File;
     global.util = util;
+    global.stream = stream;
+    global.testsFileCount = walk('./tests').sync().length;
 });

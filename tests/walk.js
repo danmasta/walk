@@ -1,8 +1,20 @@
 describe('walk', () => {
 
+    it('should return a stream', () => {
+
+        expect(walk('./index')).to.be.instanceOf(stream.Readable);
+
+    });
+
+    it('should return a promise', () => {
+
+        expect(walk('./index').promise()).to.be.instanceOf(Promise);
+
+    });
+
     it('should walk async', () => {
 
-        return walk('./tests').then(res => {
+        return walk('./index').promise().then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
         });
@@ -11,7 +23,7 @@ describe('walk', () => {
 
     it('should walk sync', () => {
 
-        let res = walk.sync('./tests');
+        let res = walk('./index').sync();
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -20,25 +32,7 @@ describe('walk', () => {
 
     it('should support single file lookups', () => {
 
-        let res = walk.sync('./index.js');
-
-        expect(res).to.exist;
-        expect(res).to.be.an('array');
-
-    });
-
-    it('should support require style lookups', () => {
-
-        let res = walk.sync('./index');
-
-        expect(res).to.exist;
-        expect(res).to.be.an('array');
-
-    });
-
-    it('should support dot files', () => {
-
-        let res = walk.sync('./.gitignore', { dot: true });
+        let res = walk('./index.js').sync();
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -46,9 +40,29 @@ describe('walk', () => {
 
     });
 
-    it('should ignore dot files', () => {
+    it('should support require style lookups', () => {
 
-        let res = walk.sync('./.gitignore', { dot: false });
+        let res = walk('./index').sync();
+
+        expect(res).to.exist;
+        expect(res).to.be.an('array');
+        expect(res.length).to.equal(1);
+
+    });
+
+    it('should include dot files', () => {
+
+        let res = walk('./.gitignore', { dot: true }).sync();
+
+        expect(res).to.exist;
+        expect(res).to.be.an('array');
+        expect(res.length).to.equal(1);
+
+    });
+
+    it('should exclude dot files', () => {
+
+        let res = walk('./.gitignore', { dot: false }).sync();
 
         expect(res).to.be.empty;
         expect(res).to.be.an('array');
@@ -57,7 +71,7 @@ describe('walk', () => {
 
     it('should support glob filtering', () => {
 
-        let res = walk.sync('./', { src: '**/*.md' });
+        let res = walk('./', { src: '**/*.md' }).sync();
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -67,21 +81,11 @@ describe('walk', () => {
 
     it('should ignore excluded directories', () => {
 
-        return walk.walk('./', { src: 'tests/**/*', ignore: 'tests|.git|node_modules' }).then(res => {
+        return walk('./', { src: 'tests/**/*', ignore: '(tests|.git|node_modules)' }).promise().then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
             expect(res.length).to.equal(0);
         });
-
-    });
-
-    it('should not ignore directories', () => {
-
-        let res = walk.sync('./tests');
-
-        expect(res).to.exist;
-        expect(res).to.be.an('array');
-        expect(res.length).to.be.above(0);
 
     });
 

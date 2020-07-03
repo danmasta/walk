@@ -11,10 +11,10 @@ Features:
 * Normalized file objects with helper methods
 * Fast pattern matching via [micromatch](https://github.com/micromatch/micromatch)
 * Include and exclude pattern matching options
-* Only 3 dependencies: [micromatch](https://github.com/micromatch/micromatch), [lodash](https://github.com/lodash/lodash), [bluebird](https://github.com/petkaantonov/bluebird)
+* Only 2 dependencies: [micromatch](https://github.com/micromatch/micromatch), [lodash](https://github.com/lodash/lodash)
 
 ## About
-We needed a better way to walk directories and read files during build and/or start time. I wanted an api that was simple, supported glob pattern matching like gulp, and returned objects with a similar format as vinyl. This package allows you to simply read any directory (or file), return an array of objects, and filter results with glob pattern matching. It can also require file contents, read as strings, streams, or buffers, and resolve require-style path strings.
+I needed a better way to walk directories and read files during build and/or run time. I wanted an api that was simple, supported glob pattern matching like gulp, and returned objects with a similar format as vinyl. This package allows you to simply read any directory (or file), return an array of objects, and filter results with glob pattern matching. It can also require file contents, or read them as strings, streams, or buffers, and resolve require-style path strings.
 
 ## Usage
 Add walk as a dependency for your app and install via npm
@@ -26,6 +26,7 @@ Require the package in your app
 ```javascript
 const walk = require('@danmasta/walk');
 ```
+By default walk returns a readable stream interface. You can use the methods: `promise()`, `map()`, `each()`, and `sync()` to consume file objects via promises or as a synchronous array.
 
 ### Options
 name | type | description
@@ -34,31 +35,27 @@ name | type | description
 `root` | *`string`* | Directory or file path as root to walk from. This gets normalized as `path.resolve(cwd, root)`. Default is `./`
 `require` | *`boolean`* | If true, `file.contents` will be a resolved object using `require`. Default is `false`
 `stream` | *`boolean`* | If true, `file.contents` will be a `Readable` stream. Default is `false`
-`read` | *`boolean\|string`* | If `true`, will read file contents as a buffer or string. If string, accepts either 'require', 'stream', or 'contents'. Default is `false`
-`sync` | *`boolean`* | Wether or not we are running in synchronous mode
+`read` | *`boolean\|string`* | If `true`, will read file contents as a buffer or string. If string, accepts either `'require'`, `'stream'`, or `'contents'`. Default is `false`
 `contents` | *`boolean`* | If true, will read file contents as string. Default is `false`
 `buffer` | *`boolean`* | If true, when reading file conents, contents will remain a buffer instead of being converted to a string. Default is `false`
 `src` | *`Array\|String\|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by including any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)*`
 `ignore` | *`Array\|String\|RegExp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by ignoring any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)(.git\|node_modules)`
 `dot` | *`boolean`* | Whether or not to include dot files when matching. Default is `true`
-`cb` | *`function`* | Function to call when flushing a file object. Default is `_.noop`
+`resolve` | *`boolean`* | Whether or not to attempt to resolve file paths if not found. Default is `true`
 
 ### Methods
 Name | Description
 -----|------------
-`walk(path, opts)` | Get a list of files based on specified options. Returns a promise that resolves with an array of file objects
-`walk.sync` | Sync version of `walk`. Returns an Array
-`contents(path, opts)` | Get the contents of files based on specified options. Returns a promise that resolves with an array of file objects
-`contents.sync` | Sync version of `contents`. Returns an Array
-`each(path, opts, iteratee)` | Runs an iteratee function for each file based on specified options. Returns a promise that resolves with an array of file objects. Iteratee takes one argument [`file`](#file-objects)
-`each.sync` | Sync version of `each`. Returns an Array
-`require(path, opts)` | Get the contents of files by requiring them. Returns a promise that resolves with an array of file objects
-`require.sync` | Sync version of `require`. Returns an Array
-`stream(path, opts)` | Returns a read stream of file objects
-`stream.sync` | Sync version of `stream`. Loads file data synchronously. Returns a read stream
+`promise()` | Returns a promise that resolves with an array of file objects
+`map(fn)` | Runs an iterator function over each file. Returns a promise that resolves with the new `array`
+`each(fn)` | Runs an iterator function over each file. Returns a promise that resolves with `undefined`
+`sync()` | Walks files and directories in syncronous mode. Returns an array of file objects
+`require()` | Enables reading of file contents by requiring them
+`stream()` | Enables reading of file contents as a stream
+`buffer()` | Enables reading of file contents as a buffer
+`contents(str)` | Enables reading of file contents. First parameter can be: `'require'`, `'stream'`, or `'buffer'`
+`resolveFilePath(str)` | Resolve a file path relative to options
 
-
-*Each method takes an optional `path` and `options` param as arguments. The `each` methods also accept an iteratee function as the last argument*
 
 ## File Objects
 Each file returned from walk has the following signature
@@ -86,58 +83,67 @@ name | description
 `isString` | Returns `true` if `file.contents` is a `string`
 `isDirectory` | Returns `true` if the file is a [directory](https://nodejs.org/api/fs.html#fs_stats_isdirectory)
 `isSymbolic` | Returns `true` if the file is a [symbolic link](https://nodejs.org/api/fs.html#fs_stats_issymboliclink)
+`isBlockDevice` | Returns `true` if the file is a [block device](https://nodejs.org/api/fs.html#fs_stats_isblockdevice)
+`isCharacterDevice` | Returns `true` if the file is a [character device](https://nodejs.org/api/fs.html#fs_stats_ischaracterdevice)
+`isFIFO` | Returns `true` if the file is a [first-in-first-out (FIFO) pipe](https://nodejs.org/api/fs.html#fs_stats_isfifo)
+`isFile` | Returns `true` if the file is a [file](https://nodejs.org/api/fs.html#fs_stats_isfile)
+`isSocket` | Returns `true` if the file is a [socket](https://nodejs.org/api/fs.html#fs_stats_issocket)
+`isEmpty` | Returns `true` if the file is empty (zero bytes)
 
 
 ## Examples
-### Walk
 ```js
 const walk = require('@danmasta/walk');
 ```
+Walk the current working directory and pipe all files to a destination stream
+```js
+walk('./').pipe(myDestinationStream());
+```
+
 Walk the current working directory, exclude all `.json` files
 ```js
-walk('./', { src: '**/*.!(json)' }).then(res => {
+walk('./', { src: '**/*.!(json)' }).promise().then(res => {
     console.log('files:', res);
 });
 ```
 Walk a child directory, include only `.json` files
 ```js
-walk('./config', { src: '**/*.json' }).then(res => {
+walk('./config', { src: '**/*.json' }).promise().then(res => {
     console.log('files:', res);
 });
 ```
 Walk a directory using an absolute path
 ```js
-walk('/usr/local').then(res => {
+walk('/usr/local').promise().then(res => {
     console.log('files:', res);
 });
 ```
 
-### Contents
 Read the contents of all `pug` files in `./views`
 ```js
-walk.contents('./views', { src: '**/*.pug' }).then(res => {
+walk('./views', { src: '**/*.pug', contents: true }).promise().then(res => {
+    console.log('templates:', res);
+});
+```
+Read the contents of all `pug` files in `./views` as a `buffer`
+```js
+walk('./views', { src: '**/*.pug', buffer: true }).promise().then(res => {
     console.log('templates:', res);
 });
 ```
 
-### Each
 Require all `js` files in the `./routes` directory and run a callback for each one
 ```js
-walk.each('./routes', { src: '**/*.js', require: true }, route => {
+walk('./routes', { src: '**/*.js', require: true }).each(route => {
     app.use(route());
-}).then(res => {
+}).then(() => {
     console.log('all routes loaded');
 });
 ```
 
-### Synchronous Methods
-To use the sync version of any method just append `.sync` to the end of the method name
+Load all templates from the `./views` directory synchronously
 ```js
-const walk = require('@danmasta/walk');
-```
-Load all templates from the `./views` directory
-```js
-const templates = walk.contents.sync('./views', { src: '**/*.pug' });
+const templates = walk('./views', { src: '**/*.pug' }).sync();
 console.log('templates:', templates);
 ```
 

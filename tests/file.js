@@ -20,7 +20,7 @@ describe('file', () => {
 
     });
 
-    it('should have helper methods', () => {
+    it('should have correct methods', () => {
 
         return walk('./index').map(file => {
 
@@ -30,6 +30,12 @@ describe('file', () => {
             expect(file.isString).to.be.a('function');
             expect(file.isDirectory).to.be.a('function');
             expect(file.isSymbolic).to.be.a('function');
+            expect(file.isBlockDevice).to.be.a('function');
+            expect(file.isCharacterDevice).to.be.a('function');
+            expect(file.isFIFO).to.be.a('function');
+            expect(file.isFile).to.be.a('function');
+            expect(file.isSocket).to.be.a('function');
+            expect(file.isEmpty).to.be.a('function');
 
         });
 
@@ -37,7 +43,7 @@ describe('file', () => {
 
     it('should have contents', () => {
 
-        return walk.contents('./index').map(file => {
+        return walk('./index').contents().map(file => {
 
             expect(file.contents).to.exist;
 
