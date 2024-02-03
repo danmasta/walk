@@ -3,42 +3,42 @@
   "version": "3.0.1",
   "author": "Daniel Smith <dannmasta@gmail.com>",
   "description": "Directory and file walking utility for node apps",
+  "license": "MIT",
   "keywords": [
     "walk",
-    "walker",
     "directory",
     "file",
-    "utility"
+    "util"
   ],
   "main": "index.js",
   "files": [
     "index.js",
+    "sync.js",
     "lib/**/*"
   ],
   "scripts": {
-    "test": "mocha tests",
-    "coverage": "nyc --reporter=lcov mocha tests"
+    "test": "./node_modules/.bin/mocha tests",
+    "coverage": "./node_modules/.bin/nyc --reporter=lcov ./node_modules/.bin/mocha tests"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/danmasta/walk.git"
-  },
-  "devDependencies": {
-    "chai": "^4.2.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1",
-    "mocha": "^8.0.1",
-    "nyc": "^15.1.0"
   },
   "engines": {
     "npm": ">=3",
     "node": ">=6"
   },
   "dependencies": {
-    "lodash": "^4.17.15",
-    "micromatch": "^4.0.2"
+    "lodash": "^4.17.21",
+    "micromatch": "^4.0.5"
+  },
+  "devDependencies": {
+    "chai": "^5.0.3",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0"
   }
 }
