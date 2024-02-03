@@ -1,4 +1,4 @@
-describe('iterate', () => {
+describe('Iterate', () => {
 
     it('should run a callback for each file and accumulate results', () => {
 
@@ -8,8 +8,8 @@ describe('iterate', () => {
             count++;
             return file;
         }).then(res => {
-            expect(count).to.equal(testsFileCount);
-            expect(res.length).to.equal(testsFileCount);
+            expect(count).to.equal(4);
+            expect(res.length).to.equal(4);
         });
 
     });
@@ -22,17 +22,18 @@ describe('iterate', () => {
             count++;
             return file;
         }).then(res => {
-            expect(count).to.equal(testsFileCount);
+            expect(count).to.equal(4);
             expect(res).to.equal(undefined);
         });
 
     });
 
-    it('should be able to iterate over results synchronously as an array', () => {
+    it('should be able to iterate over files as a synchronous array', () => {
 
-        let res = walk('./tests').sync();
+        let res = sync('./tests');
 
         expect(res).to.be.an('array');
+        expect(res.length).to.equal(4);
         expect(res.map).to.be.a('function');
         expect(res.forEach).to.be.a('function');
 

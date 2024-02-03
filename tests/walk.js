@@ -1,4 +1,4 @@
-describe('walk', () => {
+describe('Walk', () => {
 
     it('should return a stream', () => {
 
@@ -23,7 +23,7 @@ describe('walk', () => {
 
     it('should walk sync', () => {
 
-        let res = walk('./index').sync();
+        let res = sync('./index');
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -32,7 +32,7 @@ describe('walk', () => {
 
     it('should support single file lookups', () => {
 
-        let res = walk('./index.js').sync();
+        let res = sync('./index.js');
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -42,7 +42,7 @@ describe('walk', () => {
 
     it('should support require style lookups', () => {
 
-        let res = walk('./index').sync();
+        let res = sync('./index');
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -52,7 +52,7 @@ describe('walk', () => {
 
     it('should include dot files', () => {
 
-        let res = walk('./.gitignore', { dot: true }).sync();
+        let res = sync('./.gitignore', { dot: true });
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -62,16 +62,16 @@ describe('walk', () => {
 
     it('should exclude dot files', () => {
 
-        let res = walk('./.gitignore', { dot: false }).sync();
+        let res = sync('./.gitignore', { dot: false });
 
         expect(res).to.be.empty;
         expect(res).to.be.an('array');
 
     });
 
-    it('should support glob filtering', () => {
+    it('should support filtering for includes', () => {
 
-        let res = walk('./', { src: '**/*.md' }).sync();
+        let res = sync('./tests', { src: '_setup.js' });
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
@@ -79,12 +79,32 @@ describe('walk', () => {
 
     });
 
-    it('should ignore excluded directories', () => {
+    it('should support filtering for excludes', () => {
 
-        return walk('./', { src: 'tests/**/*', ignore: '(tests|.git|node_modules)' }).promise().then(res => {
+        let res = sync('./tests', { ignore: '_setup.js' });
+
+        expect(res).to.exist;
+        expect(res).to.be.an('array');
+        expect(res.length).to.equal(3);
+
+    });
+
+    it('should not exclude root walk path', () => {
+
+        let res = sync('./tests/_setup.js', { ignore: '_setup.js' });
+
+        expect(res).to.exist;
+        expect(res).to.be.an('array');
+        expect(res.length).to.equal(1);
+
+    });
+
+    it('should support both includes and excludes', () => {
+
+        return walk('./tests', { src: '(_setup|walk).js', ignore: '_setup.js' }).promise().then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
-            expect(res.length).to.equal(0);
+            expect(res.length).to.equal(1);
         });
 
     });
