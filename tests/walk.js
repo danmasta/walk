@@ -9,12 +9,14 @@ describe('Walk', () => {
     it('should return a promise', () => {
 
         expect(walk('./index').promise()).to.be.instanceOf(Promise);
+        expect(walk('./index').then()).to.be.instanceOf(Promise);
+        expect(walk('./index').catch()).to.be.instanceOf(Promise);
 
     });
 
     it('should walk async', () => {
 
-        return walk('./index').promise().then(res => {
+        return walk('./index').then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
         });
@@ -101,7 +103,7 @@ describe('Walk', () => {
 
     it('should support both includes and excludes', () => {
 
-        return walk('./tests', { src: '(_setup|walk).js', ignore: '_setup.js' }).promise().then(res => {
+        return walk('./tests', { src: '(_setup|walk).js', ignore: '_setup.js' }).then(res => {
             expect(res).to.exist;
             expect(res).to.be.an('array');
             expect(res.length).to.equal(1);
