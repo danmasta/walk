@@ -26,7 +26,7 @@ Require the package in your app
 ```javascript
 const walk = require('@danmasta/walk');
 ```
-*By default walk returns a readable stream interface. You can use the methods: `map()`, `each()`, and `promise()` to iterate file objects and return promises*
+*By default walk returns a readable stream interface. You can use the methods: `map()`, `each()`, `promise()`, `then()`, and `catch()` to iterate file objects and return promises*
 
 ### Options
 name | type | description
@@ -45,6 +45,8 @@ Name | Description
 `map(fn)` | Runs an iterator function over each file. Returns a promise that resolves with a new `array`
 `each(fn)` | Runs an iterator function over each file. Returns a promise that resolves with `undefined`
 `promise` | Returns a promise that resolves with an `array` of file objects
+`then(fn)` | Run a callback when the promise is fulfilled. Returns a promise that resolves with an `array` of file objects
+`catch(fn)` | Run a callback when the promise is rejected. Returns a promise that resolves with an `array` of file objects
 
 ### File Objects
 Each file object returned from walk has the following signature:
@@ -105,19 +107,19 @@ walk('./').pipe(writeStream());
 
 Walk the current working directory, exclude all `.json` files
 ```js
-walk('./', { src: '**/*.!(json)' }).promise().then(res => {
+walk('./', { src: '**/*.!(json)' }).then(res => {
     console.log('files:', res);
 });
 ```
 Walk a child directory, include only `.json` files
 ```js
-walk('./config', { src: '**/*.json' }).promise().then(res => {
+walk('./config', { src: '**/*.json' }).then(res => {
     console.log('files:', res);
 });
 ```
 Walk a directory using an absolute path
 ```js
-walk('/usr/local').promise().then(res => {
+walk('/usr/local').then(res => {
     console.log('files:', res);
 });
 ```
