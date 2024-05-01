@@ -2,7 +2,7 @@ const stream = require('stream');
 const walk = require('../index');
 const File = require('../lib/file');
 const util = require('../lib/util');
-const sync = require('../sync');
+const sync = require('../sync/index');
 
 beforeEach(() => {
     return import('chai').then(chai => {
