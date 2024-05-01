@@ -1,12 +1,10 @@
 const fs = require('fs');
-const FileAsync = require('../file');
+const FileAsync = require('../lib/file');
+const util = require('../lib/util');
+const { BOM } = require('../lib/constants');
 const _ = require('lodash');
 
 class File extends FileAsync {
-
-    constructor (...args) {
-        super(...args);
-    }
 
     append (data, opts) {
         return fs.appendFileSync(
@@ -25,10 +23,24 @@ class File extends FileAsync {
 
     readAsString (opts) {
         if ((!opts || opts && !opts.encoding) && !this.encoding) {
-            throw new File.FileError('Encoding is required to read as string');
+            throw new util.FileError('Encoding is required to read as string');
         } else {
             return this.read(opts);
         }
+    }
+
+    readAsBuffer (opts) {
+        return this.read(
+            _.assign(opts, { encoding: null })
+        );
+    }
+
+    readStr (...args) {
+        return this.readAsString(...args);
+    }
+
+    readBuf (...args) {
+        return this.readAsBuffer(...args);
     }
 
     write (data, opts) {
@@ -48,7 +60,7 @@ class File extends FileAsync {
         fs.readSync(fd, buff, 0, 4, 0);
         fs.closeSync(fd);
 
-        _.some(File.constants.BOM, (val, key) => {
+        _.some(BOM, (val, key) => {
             if (buff.indexOf(val) === 0) {
                 return enc = key;
             }
