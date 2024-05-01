@@ -13,9 +13,22 @@
   "main": "index.js",
   "files": [
     "index.js",
-    "sync.js",
-    "lib/**/*"
+    "index.mjs",
+    "lib/**/*",
+    "sync/**/*"
   ],
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js"
+    },
+    "./sync": {
+      "import": "./sync/index.mjs",
+      "require": "./sync/index.js"
+    },
+    "./lib/*": "./lib/*.js",
+    "./sync/*": "./sync/*.js"
+  },
   "scripts": {
     "test": "./node_modules/.bin/mocha tests",
     "coverage": "./node_modules/.bin/nyc --reporter=lcov ./node_modules/.bin/mocha tests"
