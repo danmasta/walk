@@ -26,7 +26,7 @@ Require the package in your app
 ```javascript
 const walk = require('@danmasta/walk');
 ```
-*By default walk returns a readable stream interface. You can use the methods: `map()`, `each()`, `promise()`, `then()`, and `catch()` to iterate file objects and return promises*
+*By default walk returns a readable stream interface. You can use the methods: `map()`, `tap()`, `each()`, `promise()`, `then()`, and `catch()` to iterate file objects and return promises*
 
 ### Options
 name | type | description
@@ -38,11 +38,13 @@ name | type | description
 `ignore` | *`array\|string\|regexp`* | [Micromatch pattern](https://github.com/micromatch/micromatch#matcher) for result filtering by ignoring any matches. Can be a path string, glob pattern string, regular expression, or an array of strings. Defaults to `*(../)*(**/)(.git\|node_modules)`
 `encoding` | *`string`* | Which encoding to use when reading or writing file contents. Default is `utf8`
 `resolve` | *`boolean`* | Whether or not to attempt to resolve file paths if not found. Default is `true`
+`paths` | *`array\|string`* | Which paths to walk for files. Default is `undefined`
 
 ### Methods
 Name | Description
 -----|------------
-`map(fn)` | Runs an iterator function over each file. Returns a promise that resolves with a new `array`
+`map(fn)` | Runs an iterator function over each file. Returns a promise that resolves with a new `array` of return values
+`tap(fn)` | Runs an iterator function over each file. Returns a promise that resolves with an `array` of file objects
 `each(fn)` | Runs an iterator function over each file. Returns a promise that resolves with `undefined`
 `promise` | Returns a promise that resolves with an `array` of file objects
 `then(fn)` | Run a callback when the promise is fulfilled. Returns a promise that resolves with an `array` of file objects
@@ -79,12 +81,17 @@ name | description
 `readBuf` | Alias for `readAsBuffer`
 [`write(data, opts)`](https://nodejs.org/api/fs.html#fspromiseswritefilefile-data-options) | Writes data to the file
 `require` | Reads the file contents using `require`
+`import` | Reads the file contents using `import`. Returns a promise
+`requireOrImport` | Reads the file contents using `import` or `require` based on esm-ness. Returns a promise
+`requireImportOrRead` | Reads the file contents using `import` or `require` if able, otherwise reads as string or buffer based on encoding. Returns a promise
+`isModule` | Returns `true` if `file.contents` is a [`module`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import#module_namespace_object)
 `isBuffer` | Returns `true` if `file.contents` is a [`buffer`](https://nodejs.org/api/buffer.html#buffer_class_method_buffer_isbuffer_obj)
 `isStream` | Returns `true` if `file.contents` is a [`stream`](https://nodejs.org/api/stream.html)
 `isNull` | Returns `true` if `file.contents` is `null`
+`isNil` | Returns `true` if `file.contents` is `null` or `undefined`
 `isString` | Returns `true` if `file.contents` is a `string`
 `isDirectory` | Returns `true` if the file is a [directory](https://nodejs.org/api/fs.html#fs_stats_isdirectory)
-`isSymbolic` | Returns `true` if the file is a [symbolic link](https://nodejs.org/api/fs.html#fs_stats_issymboliclink)
+`isSymbolicLink` | Returns `true` if the file is a [symbolic link](https://nodejs.org/api/fs.html#fs_stats_issymboliclink)
 `isBlockDevice` | Returns `true` if the file is a [block device](https://nodejs.org/api/fs.html#fs_stats_isblockdevice)
 `isCharacterDevice` | Returns `true` if the file is a [character device](https://nodejs.org/api/fs.html#fs_stats_ischaracterdevice)
 `isFIFO` | Returns `true` if the file is a [first-in-first-out (FIFO) pipe](https://nodejs.org/api/fs.html#fs_stats_isfifo)
