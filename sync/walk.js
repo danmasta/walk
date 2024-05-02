@@ -2,6 +2,7 @@ const WalkAsync = require('../lib/walk');
 const FileResolver = require('./resolver');
 const File = require('./file');
 const util = require('../lib/util');
+const _ = require('lodash');
 
 class Walk extends WalkAsync {
 
