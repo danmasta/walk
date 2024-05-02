@@ -51,7 +51,7 @@ class File extends FileAsync {
         );
     }
 
-    getEncodingFromBOM () {
+    getEncodingFromBom () {
 
         let buff = Buffer.alloc(4);
         let enc = undefined;
