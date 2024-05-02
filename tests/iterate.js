@@ -9,18 +9,18 @@ describe('Iterate', () => {
             return null;
         });
 
-        expect(count).to.equal(4);
+        expect(count).to.equal(5);
         expect(res).to.be.an('array');
-        expect(res.length).to.equal(4);
+        expect(res.length).to.equal(5);
         expect(res.at(0)).to.be.null;
 
         return walk('./tests').map(file => {
             count++;
             return null;
         }).then(res => {
-            expect(count).to.equal(8);
+            expect(count).to.equal(10);
             expect(res).to.be.an('array');
-            expect(res.length).to.equal(4);
+            expect(res.length).to.equal(5);
             expect(res.at(0)).to.be.null;
         });
 
@@ -35,14 +35,14 @@ describe('Iterate', () => {
             return file;
         });
 
-        expect(count).to.equal(4);
+        expect(count).to.equal(5);
         expect(res).to.be.undefined;
 
         return walk('./tests').each(file => {
             count++;
             return file;
         }).then(res => {
-            expect(count).to.equal(8);
+            expect(count).to.equal(10);
             expect(res).to.be.undefined;
         });
 
@@ -57,18 +57,18 @@ describe('Iterate', () => {
             return null;
         });
 
-        expect(count).to.equal(4);
+        expect(count).to.equal(5);
         expect(res).to.be.an('array');
-        expect(res.length).to.equal(4);
+        expect(res.length).to.equal(5);
         expect(res.at(0)).to.be.instanceOf(File);
 
         return walk('./tests').tap(file => {
             count++;
             return null;
         }).then(res => {
-            expect(count).to.equal(8);
+            expect(count).to.equal(10);
             expect(res).to.be.an('array');
-            expect(res.length).to.equal(4);
+            expect(res.length).to.equal(5);
             expect(res.at(0)).to.be.instanceOf(File);
         });
 
@@ -79,7 +79,7 @@ describe('Iterate', () => {
         let res = sync('./tests');
 
         expect(res).to.be.an('array');
-        expect(res.length).to.equal(4);
+        expect(res.length).to.equal(5);
         expect(res.map).to.be.a('function');
         expect(res.forEach).to.be.a('function');
 

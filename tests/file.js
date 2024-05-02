@@ -48,7 +48,7 @@ describe('File', () => {
             expect(file.isFile).to.be.a('function');
             expect(file.isSocket).to.be.a('function');
             expect(file.isEmpty).to.be.a('function');
-            expect(file.getEncodingFromBOM).to.be.a('function');
+            expect(file.getEncodingFromBom).to.be.a('function');
         });
 
     });
@@ -79,6 +79,14 @@ describe('File', () => {
 
     });
 
+    it('should read contents by import', () => {
+
+        return walk('./index').each(async file => {
+            expect(util.isModule(await file.import())).to.be.true;
+        });
+
+    });
+
     it('should read contents as buffer', () => {
 
         return walk('./index').each(file => {
@@ -102,6 +110,18 @@ describe('File', () => {
         return walk('./index').each(file => {
             expect(file.relative).to.equal('');
             expect(file.relativeFromCwd).to.equal('index.js');
+        });
+
+    });
+
+    it('should get encoding from bom', () => {
+
+        let res = sync('./tests/bom.txt');
+
+        expect(res.at(0).getEncodingFromBom()).to.equal('utf7');
+
+        return walk('./tests/bom.txt').each(async file => {
+            expect(await file.getEncodingFromBom()).to.equal('utf7');
         });
 
     });

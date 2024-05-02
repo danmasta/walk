@@ -18,6 +18,30 @@ describe('Walk', () => {
 
     });
 
+    it('should walk as stream async', done => {
+        let count = 0;
+        let read = walk('./tests');
+        read.on('data', file => {
+            count++;
+        });
+        read.on('end', () => {
+            expect(count).to.equal(5);
+            done();
+        });
+    });
+
+    it('should walk as stream sync', done => {
+        let count = 0;
+        let read = new Sync('./tests');
+        read.on('data', file => {
+            count++;
+        });
+        read.on('end', () => {
+            expect(count).to.equal(5);
+            done();
+        });
+    });
+
     it('should walk async', () => {
 
         return walk('./index').then(res => {
@@ -91,7 +115,7 @@ describe('Walk', () => {
 
         expect(res).to.exist;
         expect(res).to.be.an('array');
-        expect(res.length).to.equal(3);
+        expect(res.length).to.equal(4);
 
     });
 
