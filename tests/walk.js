@@ -3,6 +3,7 @@ describe('Walk', () => {
     it('should return a stream', () => {
 
         expect(walk('./index')).to.be.instanceOf(stream.Readable);
+        expect(new Sync('./index')).to.be.instanceOf(stream.Readable);
 
     });
 
@@ -11,6 +12,9 @@ describe('Walk', () => {
         expect(walk('./index').promise()).to.be.instanceOf(Promise);
         expect(walk('./index').then()).to.be.instanceOf(Promise);
         expect(walk('./index').catch()).to.be.instanceOf(Promise);
+        expect(new Sync('./index').promise()).to.be.instanceOf(Promise);
+        expect(new Sync('./index').then()).to.be.instanceOf(Promise);
+        expect(new Sync('./index').catch()).to.be.instanceOf(Promise);
 
     });
 

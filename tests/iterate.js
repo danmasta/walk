@@ -4,12 +4,24 @@ describe('Iterate', () => {
 
         let count = 0;
 
+        let res = new Sync('./tests').map(file => {
+            count++;
+            return null;
+        });
+
+        expect(count).to.equal(4);
+        expect(res).to.be.an('array');
+        expect(res.length).to.equal(4);
+        expect(res.at(0)).to.be.null;
+
         return walk('./tests').map(file => {
             count++;
-            return file;
+            return null;
         }).then(res => {
-            expect(count).to.equal(4);
+            expect(count).to.equal(8);
+            expect(res).to.be.an('array');
             expect(res.length).to.equal(4);
+            expect(res.at(0)).to.be.null;
         });
 
     });
@@ -18,12 +30,46 @@ describe('Iterate', () => {
 
         let count = 0;
 
+        let res = new Sync('./tests').each(file => {
+            count++;
+            return file;
+        });
+
+        expect(count).to.equal(4);
+        expect(res).to.be.undefined;
+
         return walk('./tests').each(file => {
             count++;
             return file;
         }).then(res => {
-            expect(count).to.equal(4);
-            expect(res).to.equal(undefined);
+            expect(count).to.equal(8);
+            expect(res).to.be.undefined;
+        });
+
+    });
+
+    it('should run a callback for each file and return original file objects', () => {
+
+        let count = 0;
+
+        let res = new Sync('./tests').tap(file => {
+            count++;
+            return null;
+        });
+
+        expect(count).to.equal(4);
+        expect(res).to.be.an('array');
+        expect(res.length).to.equal(4);
+        expect(res.at(0)).to.be.instanceOf(File);
+
+        return walk('./tests').tap(file => {
+            count++;
+            return null;
+        }).then(res => {
+            expect(count).to.equal(8);
+            expect(res).to.be.an('array');
+            expect(res.length).to.equal(4);
+            expect(res.at(0)).to.be.instanceOf(File);
         });
 
     });

@@ -11,8 +11,10 @@ beforeEach(() => {
         global.should = chai.should();
         global.stream = stream;
         global.walk = walk;
+        global.Walk = walk.Walk;
         global.File = File;
         global.util = util;
         global.sync = sync;
+        global.Sync = sync.Walk;
     });
 });
