@@ -6,7 +6,7 @@ Features:
 * Simple, lightweight, and fast
 * Async, sync, streams, and promise api
 * Simple filtering with glob pattern matching
-* Require file contents or read as stream, buffer, or string
+* Require or import file contents, or read as stream, buffer, or string
 * Resolves require-style path strings
 * Normalized file objects with helper methods
 * Fast pattern matching via [micromatch](https://github.com/micromatch/micromatch)
@@ -14,7 +14,7 @@ Features:
 * Only 2 dependencies: [micromatch](https://github.com/micromatch/micromatch), [lodash](https://github.com/lodash/lodash)
 
 ## About
-I needed a better way to walk directories and read files during build and/or run time. I wanted an api that was simple, supported glob pattern matching like gulp, and returned objects with a similar format as vinyl. This package allows you to simply read any directory (or file), filter results with glob pattern matching, and return an array of file objects. It can also require file contents, read them as streams, buffers, or strings, and resolve require-style path strings.
+I needed a better way to walk directories and read files during build and/or run time. I wanted an api that was simple, supported glob pattern matching like gulp, and returned objects with a similar format as vinyl. This package allows you to simply read any directory (or file), filter results with glob pattern matching, and return an array of file objects. It can also require or import file contents, read them as streams, buffers, or strings, and resolve require-style path strings.
 
 ## Usage
 Add walk as a dependency for your app and install via npm
@@ -81,9 +81,9 @@ name | description
 `readBuf` | Alias for `readAsBuffer`
 [`write(data, opts)`](https://nodejs.org/api/fs.html#fspromiseswritefilefile-data-options) | Writes data to the file
 `require` | Reads the file contents using `require`
-`import` | Reads the file contents using `import`. Returns a promise
-`requireOrImport` | Reads the file contents using `import` or `require` based on esm-ness. Returns a promise
-`requireImportOrRead` | Reads the file contents using `import` or `require` if able, otherwise reads as string or buffer based on encoding. Returns a promise
+`import` | Reads the file contents using `import`. Returns a `promise`
+`requireOrImport` | Reads the file contents using `import` or `require` based on esm-ness. Returns a `promise`
+`requireImportOrRead` | Reads the file contents using `import` or `require` if able, otherwise reads as `string` or `buffer` based on encoding. Returns a `promise`
 `isModule` | Returns `true` if `file.contents` is a [`module`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import#module_namespace_object)
 `isBuffer` | Returns `true` if `file.contents` is a [`buffer`](https://nodejs.org/api/buffer.html#buffer_class_method_buffer_isbuffer_obj)
 `isStream` | Returns `true` if `file.contents` is a [`stream`](https://nodejs.org/api/stream.html)
@@ -98,7 +98,7 @@ name | description
 `isFile` | Returns `true` if the file is a [file](https://nodejs.org/api/fs.html#fs_stats_isfile)
 `isSocket` | Returns `true` if the file is a [socket](https://nodejs.org/api/fs.html#fs_stats_issocket)
 `isEmpty` | Returns `true` if the file is empty (zero bytes)
-`getEncodingFromBOM` | Returns the encoding from the file [byte order mark](https://en.wikipedia.org/wiki/Byte_order_mark#Byte_order_marks_by_encoding) if set, otherwise `undefined`
+`getEncodingFromBom` | Returns the encoding from the file [byte order mark](https://en.wikipedia.org/wiki/Byte_order_mark#Byte_order_marks_by_encoding) if set, otherwise `undefined`
 
 ### Sync
 This package also supports a fully synchronous api. Instead of requiring the default package just require `@danmasta/walk/sync`. The api is exactly the same for walking and file objects
