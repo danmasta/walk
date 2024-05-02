@@ -48,7 +48,7 @@ describe('Iterate', () => {
 
     });
 
-    it('should run a callback for each file and return original file objects', () => {
+    it('should run a callback for each file and accumulate original file objects', () => {
 
         let count = 0;
 
