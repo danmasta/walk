@@ -1,20 +1,15 @@
-const stream = require('stream');
-const walk = require('../index');
-const File = require('../lib/file');
-const util = require('../lib/util');
-const sync = require('../sync/index');
+import { assert, expect, should } from 'chai';
+import { File, sync, Walk, walk } from '../index.js';
+
+const [file] = await walk('./index.js').promise();
 
 beforeEach(() => {
-    return import('chai').then(chai => {
-        global.assert = chai.assert;
-        global.expect = chai.expect;
-        global.should = chai.should();
-        global.stream = stream;
-        global.walk = walk;
-        global.Walk = walk.Walk;
-        global.File = File;
-        global.util = util;
-        global.sync = sync;
-        global.Sync = sync.Walk;
-    });
+    global.assert = assert;
+    global.expect = expect;
+    global.should = should();
+    global.Walk = Walk;
+    global.File = File;
+    global.walk = walk;
+    global.sync = sync;
+    global.file = file;
 });

@@ -1,129 +1,65 @@
+import { isModule } from 'lo';
+import { Buffer } from 'node:buffer';
+import { Readable } from 'node:stream';
+
 describe('File', () => {
 
-    it('should be an instance of File', () => {
-        return walk('./index').each(file => {
-            expect(file).to.be.instanceOf(File);
-        });
+    it('instance of File', () => {
+        expect(file).to.be.instanceOf(File);
     });
 
-    it('should have correct properties and methods', () => {
-
-        return walk('./index').each(file => {
-            expect(file.cwd).to.exist;
-            expect(file.root).to.exist;
-            expect(file.path).to.exist;
-            expect(file.relative).to.exist;
-            expect(file.relativeFromCwd).to.exist;
-            expect(file.dir).to.exist;
-            expect(file.base).to.exist;
-            expect(file.name).to.exist;
-            expect(file.ext).to.exist;
-            expect(file.stat).to.exist;
-            expect(file.contents).to.be.undefined;
-            expect(file.encoding).to.exist;
-            expect(file.createReadStream).to.be.a('function');
-            expect(file.createWriteStream).to.be.a('function');
-            expect(file.append).to.be.a('function');
-            expect(file.read).to.be.a('function');
-            expect(file.readAsString).to.be.a('function');
-            expect(file.readAsBuffer).to.be.a('function');
-            expect(file.readStr).to.be.a('function');
-            expect(file.readBuf).to.be.a('function');
-            expect(file.write).to.be.a('function');
-            expect(file.require).to.be.a('function');
-            expect(file.import).to.be.a('function');
-            expect(file.requireOrImport).to.be.a('function');
-            expect(file.requireImportOrRead).to.be.a('function');
-            expect(file.isModule).to.be.a('function');
-            expect(file.isBuffer).to.be.a('function');
-            expect(file.isStream).to.be.a('function');
-            expect(file.isNull).to.be.a('function');
-            expect(file.isNil).to.be.a('function');
-            expect(file.isString).to.be.a('function');
-            expect(file.isDirectory).to.be.a('function');
-            expect(file.isSymbolicLink).to.be.a('function');
-            expect(file.isBlockDevice).to.be.a('function');
-            expect(file.isCharacterDevice).to.be.a('function');
-            expect(file.isFIFO).to.be.a('function');
-            expect(file.isFile).to.be.a('function');
-            expect(file.isSocket).to.be.a('function');
-            expect(file.isEmpty).to.be.a('function');
-            expect(file.getEncodingFromBom).to.be.a('function');
-        });
-
+    it('properties', () => {
+        expect(file.cwd).to.exist;
+        expect(file.root).to.exist;
+        expect(file.path).to.exist;
+        expect(file.relative).to.exist;
+        expect(file.relativeFromCwd).to.exist;
+        expect(file.dir).to.exist;
+        expect(file.base).to.exist;
+        expect(file.name).to.exist;
+        expect(file.ext).to.exist;
+        expect(file.stat).to.exist;
+        expect(file.contents).to.be.undefined;
+        expect(file.encoding).to.exist;
     });
 
-    it('should read contents as string async', () => {
-
-        return walk('./index').each(file => {
-            return file.readStr().then(res => {
-                expect(res).to.be.a('string');
-            });
-        });
-
+    it('read contents as string async', async () => {
+        expect(await file.readStr()).to.be.a('string');
     });
 
-    it('should read contents as string sync', () => {
-
-        sync('./index').forEach(file => {
-            expect(file.readStr()).to.be.a('string');
-        });
-
+    it('read contents as string sync', () => {
+        expect(file.readStrSync()).to.be.a('string');
     });
 
-    it('should read contents by require', () => {
-
-        return walk('./index').each(file => {
-            expect(file.require()).to.be.a('function');
-        });
-
+    it('read contents by require', () => {
+        let [file] = sync('dist/cjs/index.cjs');
+        expect(file.require()).to.be.a('object');
     });
 
-    it('should read contents by import', () => {
-
-        return walk('./index').each(async file => {
-            expect(util.isModule(await file.import())).to.be.true;
-        });
-
+    it('read contents by import', async () => {
+        expect(isModule(await file.import())).to.be.true;
     });
 
-    it('should read contents as buffer', () => {
-
-        return walk('./index').each(file => {
-            return file.readBuf().then(res => {
-                expect(res).to.be.instanceOf(Buffer);
-            });
-        });
-
+    it('read contents as buffer', async () => {
+        expect(await file.readBuf()).to.be.instanceOf(Buffer);
     });
 
-    it('should read contents as read stream', () => {
-
-        return walk('./index').each(file => {
-            expect(file.createReadStream()).to.be.instanceOf(stream.Readable);
-        });
-
+    it('read contents as readable stream', () => {
+        expect(file.createReadStream()).to.be.instanceOf(Readable);
     });
 
-    it('should set relative path based on root', () => {
-
-        return walk('./index').each(file => {
-            expect(file.relative).to.equal('');
-            expect(file.relativeFromCwd).to.equal('index.js');
-        });
-
+    it('set relative path based on root', async () => {
+        expect(file.relative).to.equal('');
+        expect(file.relativeFromCwd).to.equal('index.js');
+        let [constants] = await walk('lib/constants', { require: true }).promise();
+        expect(constants.relative).to.equal('');
+        expect(constants.relativeFromCwd).to.equal('lib/constants.js');
     });
 
-    it('should get encoding from bom', () => {
-
-        let res = sync('./tests/bom.txt');
-
-        expect(res.at(0).getEncodingFromBom()).to.equal('utf7');
-
-        return walk('./tests/bom.txt').each(async file => {
-            expect(await file.getEncodingFromBom()).to.equal('utf7');
-        });
-
+    it('get encoding from bom', async () => {
+        let [file] = await walk('tests/bom.txt').promise();
+        expect(await file.getEncodingFromBOM()).to.equal('utf7');
+        expect(file.getEncodingFromBOMSync()).to.equal('utf7');
     });
 
 });
