@@ -1,6 +1,7 @@
 var lo = require('lo');
 var node_fs = require('node:fs');
 var node_path = require('node:path');
+var node_process = require('node:process');
 var picomatch = require('picomatch');
 var constants = require('./constants.cjs');
 var file = require('./file.cjs');
@@ -9,11 +10,14 @@ var util = require('./util.cjs');
 const { readdir, stat } = node_fs.promises;
 
 const defs = {
-    cwd: process.cwd(),
+    cwd: node_process.cwd(),
     root: '.',
     src: constants.GLOB.all,
-    dot: true,
     ignore: constants.GLOB.ignore,
+    bash: false,
+    dot: true,
+    posix: false,
+    regex: false,
     encoding: 'utf8',
     require: false,
     paths: undefined,
@@ -47,11 +51,12 @@ class FileResolver {
         if (!opts.dot && opts.src === constants.GLOB.all) {
             opts.src = constants.GLOB.dot;
         }
+        let { bash, dot, posix, regex } = opts;
         if (!this.include && opts.src) {
-            this.include = picomatch(opts.src, { dot: opts.dot });
+            this.include = picomatch(opts.src, { bash, dot, posix, regex });
         }
         if (!this.exclude && opts.ignore) {
-            this.exclude = picomatch(opts.ignore, { dot: opts.dot });
+            this.exclude = picomatch(opts.ignore, { bash, dot, posix, regex });
         }
         this.paths.push(...opts.paths);
         this.resolve = false;

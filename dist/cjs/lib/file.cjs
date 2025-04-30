@@ -1,13 +1,14 @@
 var lo = require('lo');
 var node_fs = require('node:fs');
 var node_path = require('node:path');
+var node_process = require('node:process');
 var constants = require('./constants.cjs');
 var util = require('./util.cjs');
 
 const { appendFile, readFile, writeFile, open } = node_fs.promises;
 
 const defs = {
-    cwd: process.cwd(),
+    cwd: node_process.cwd(),
     root: undefined,
     path: undefined,
     relative: undefined,
@@ -160,7 +161,7 @@ class File {
         }
     }
 
-    async importOrRequire () {
+    importOrRequire () {
         return lo.importOrRequire(this.path, this.ext);
     }
 

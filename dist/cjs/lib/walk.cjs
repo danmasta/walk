@@ -37,16 +37,16 @@ class Walk extends node_stream.Readable {
         }
     }
 
+    each (fn = lo.noop) {
+        return lo.each(this, fn);
+    }
+
     map (fn=file=>file) {
         return lo.map(this, fn);
     }
 
     tap (fn=lo.noop) {
         return lo.tap(this, fn);
-    }
-
-    each (fn=lo.noop) {
-        return lo.each(this, fn);
     }
 
     async promise () {
