@@ -3,14 +3,14 @@ Directory and file walking utility for node apps
 
 #### Features:
 * Easy to use
-* Simple, lightweight, fast
+* Simple, lightweight, and fast
 * Native esm and cjs support
 * Support for filtering with glob pattern matching
 * Support for require-style path resolving
 * Include and exclude pattern matching options
 * Normalized [`File`](#file-objects) objects with helper methods
 * Includes async and sync api
-* Includes multiple interfaces:
+* Supports multiple interfaces:
     * `Readable Stream`
     * `Promise`
     * `Iterable`
@@ -33,8 +33,7 @@ Install a specific [version](https://github.com/danmasta/walk/tags)
 npm install walk@danmasta/walk#v0.0.1 --save
 ```
 Import or require the package in your app
-
-```javascript
+```js
 import walk from 'walk';
 ```
 
@@ -205,7 +204,7 @@ await walk('views', { src: '**/*.pug' }).tap(async file => {
     let tpl = await file.readStr();
 });
 ```
-#### Import all `js` files in the `routes` directory and run a callback for each one
+#### Import all `js` files in the `routes` directory
 ```js
 await walk('routes', { src: '**/*.js' }).each(async route => {
     app.use(await route.import());
