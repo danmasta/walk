@@ -61,8 +61,8 @@ Name | Description
 `map(fn)` | Run an iterator function for each file. Returns a promise that resolves with an array of return values if `fn` is async. Otherwise returns an array of return values
 `tap(fn)` | Run an iterator function for each file. Returns a promise that resolves with an `array` of File objects if `fn` is async. Otherwise returns an array of File objects
 `promise()` | Returns a promise that resolves with an `array` of File objects
-`[Symbol.asyncIterator]()` | Returns an [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)
-`[Symbol.iterator]()` | Returns a regular synchronus [`Iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator)
+`Symbol.asyncIterator()` | Returns an [`AsyncIterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncIterator)
+`Symbol.iterator()` | Returns a regular synchronus [`Iterator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator)
 `generator()` | Returns an [`AsyncGenerator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncGenerator)
 `generatorSync()` | Returns a regular synchronous [`Generator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator)
 
