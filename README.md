@@ -85,7 +85,7 @@ Name | Type | Description
 `encoding` | *`string`* | Default encoding to use when reading or writing file contents. Default is `utf8`
 
 ### Methods
-name | description
+Name | Description
 -----| -----------
 [`createReadStream(opts)`](https://nodejs.org/api/fs.html#fscreatereadstreampath-options) | Returns a `Readable` stream for File
 [`createWriteStream(opts)`](https://nodejs.org/api/fs.html#fscreatewritestreampath-options) | Returns a `Writable` stream for File
